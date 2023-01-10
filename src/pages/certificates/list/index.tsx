@@ -20,6 +20,9 @@ import CertificateOwnerDialog from "components/pages/certificates/CertificateOwn
 import CertificateRAProfileDialog from "components/pages/certificates/CertificateRAProfileDialog";
 import { downloadFileZip } from "utils/download";
 import CertificateComplianceStatusIcon from "components/pages/certificates/CertificateComplianceStatusIcon";
+import ComponentLock from "components/ComponentLock";
+import {selectors as userSelectors} from 'ducks/users'
+import { LIST_OF_CERTIFICATES } from "static/componentLocks";
 
 
 interface Props {
@@ -74,6 +77,10 @@ export default function CertificateList({
    const [updateRaProfile, setUpdateRaProfile] = useState<boolean>(false);
 
    const isBusy = isFetchingAvailablFilters || isFetchingList || isIssuing || isRevoking || isRenewing || isDeleting || isBulkDeleting || isUpdatingGroup || isUpdatingRaProfile || isUpdatingOwner || isBulkUpdatingGroup || isBulkUpdatingRaProfile || isBulkUpdatingOwner || isUploading;
+   const componentLocks = useSelector(userSelectors.componentLocks);
+   const componentLockCheck = componentLocks.find(
+      (componentLock) => componentLock.componentName === LIST_OF_CERTIFICATES
+    );
 
    useEffect(
 
@@ -427,22 +434,27 @@ export default function CertificateList({
             onFiltersChanged={onFiltersChanged}
          />
 
-         <Widget title={title} busy={isBusy}>
+         <ComponentLock 
+           locked={componentLockCheck?.componentName === LIST_OF_CERTIFICATES}
+           errored={componentLockCheck?.errored}
+         >
+            <Widget title={title} busy={isBusy}>
 
-            <CustomTable
-               multiSelect={multiSelect}
-               headers={certificatesRowHeaders}
-               data={certificateList}
-               onCheckedRowsChanged={setCheckedRows}
-               hasCheckboxes={true}
-               hasPagination={true}
-               canSearch={false}
-               paginationData={paginationData}
-               onPageChanged={setPageNumber}
-               onPageSizeChanged={onPageSizeChanged}
-            />
+               <CustomTable
+                  multiSelect={multiSelect}
+                  headers={certificatesRowHeaders}
+                  data={certificateList}
+                  onCheckedRowsChanged={setCheckedRows}
+                  hasCheckboxes={true}
+                  hasPagination={true}
+                  canSearch={false}
+                  paginationData={paginationData}
+                  onPageChanged={setPageNumber}
+                  onPageSizeChanged={onPageSizeChanged}
+               />
 
-         </Widget>
+            </Widget>
+         </ComponentLock>
 
 
          <Dialog

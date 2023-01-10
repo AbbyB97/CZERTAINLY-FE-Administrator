@@ -12,6 +12,8 @@ import { transformAvailableCertificateFilterDTOToModel, transformCertDTOToModel,
 import { transformAttributeDescriptorDTOToModel, transformAttributeModelToDTO } from "./transform/attributes";
 import { transformGroupDtoToModel } from "./transform/groups";
 import { transformLocationDtoToModel } from "./transform/locations";
+import * as usersSlice from "./users";
+import { CERTIFICATE_INVENTORY_FILTER, LIST_OF_CERTIFICATES } from "static/componentLocks";
 
 
 const listCertificates: AppEpic = (action$, state, deps) => {
@@ -62,6 +64,9 @@ const listCertificatesFailure: AppEpic = (action$, state, deps) => {
       ),
       map(
          action => alertActions.error(action.payload.error || "Unexpected error occured")
+      ),
+      map(
+         action => usersSlice.actions.updateComponentLock({ componentName: LIST_OF_CERTIFICATES, errored: false })
       )
 
    )
@@ -384,6 +389,9 @@ const getAvailableCertificateFiltersFailure: AppEpic = (action$, state, deps) =>
       ),
       map(
          action => alertActions.error(action.payload.error || "Unexpected error occured")
+      ),
+      map(
+         action => usersSlice.actions.updateComponentLock({ componentName: CERTIFICATE_INVENTORY_FILTER, errored: false })
       )
 
    )

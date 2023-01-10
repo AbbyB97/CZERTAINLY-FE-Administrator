@@ -11,6 +11,9 @@ import MDBColumnName from "components/MDBColumnName";
 import CustomTable, { TableDataRow, TableHeader } from "components/CustomTable";
 import Dialog from "components/Dialog";
 import { MDBBadge } from "mdbreact";
+import ComponentLock from "components/ComponentLock";
+import {selectors as userSelectors} from 'ducks/users'
+import { LIST_OF_ROLES } from "static/componentLocks";
 
 export default function RolesList() {
 
@@ -25,6 +28,12 @@ export default function RolesList() {
    const isFetching = useSelector(selectors.isFetchingList);
    const isDeleting = useSelector(selectors.isDeleting);
    const isUpdating = useSelector(selectors.isUpdating);
+   const componentLocks = useSelector(userSelectors.componentLocks);
+   const componentLockCheck = componentLocks.find(
+      (componentLock) => componentLock.componentName === LIST_OF_ROLES
+    );
+
+    
 
    const isBusy = isFetching || isDeleting || isUpdating;
 
@@ -215,20 +224,22 @@ export default function RolesList() {
    return (
 
       <Container className="themed-container" fluid>
-
-         <Widget title={title} busy={isBusy}>
-
-            <br />
-            <CustomTable
-               headers={rolesTableHeader}
-               data={rolesTableData}
-               onCheckedRowsChanged={setCheckedRows}
-               canSearch={true}
-               hasCheckboxes={true}
-               hasPagination={true}
-            />
-
-         </Widget>
+      <ComponentLock
+        locked={componentLockCheck?.componentName === LIST_OF_ROLES}
+        errored={false}
+      >
+        <Widget title={title} busy={isBusy}>
+          <br />
+          <CustomTable
+            headers={rolesTableHeader}
+            data={rolesTableData}
+            onCheckedRowsChanged={setCheckedRows}
+            canSearch={true}
+            hasCheckboxes={true}
+            hasPagination={true}
+          />
+        </Widget>
+      </ComponentLock>
 
          <Dialog
             isOpen={confirmDelete}

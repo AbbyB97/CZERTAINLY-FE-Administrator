@@ -12,6 +12,9 @@ import CustomTable, { TableDataRow, TableHeader } from "components/CustomTable";
 import Dialog from "components/Dialog";
 import { ComplianceListItemRuleDTO } from "api/compliance-profile";
 import { MDBBadge } from "mdbreact";
+import ComponentLock from "components/ComponentLock";
+import {selectors as userSelectors} from 'ducks/users'
+import { COMPLIANCE_PROFILE_LIST } from "static/componentLocks";
 
 export default function AdministratorsList() {
 
@@ -36,6 +39,12 @@ export default function AdministratorsList() {
    const [confirmForceDelete, setConfirmForceDelete] = useState<boolean>(false);
 
    const [complianceCheck, setComplianceCheck] = useState<boolean>(false);
+
+   const componentLocks = useSelector(userSelectors.componentLocks);
+   const componentLockCheck = componentLocks.find(
+      (componentLock) => componentLock.componentName === COMPLIANCE_PROFILE_LIST
+    );
+
 
    useEffect(
 
@@ -296,7 +305,7 @@ export default function AdministratorsList() {
    return (
 
       <Container className="themed-container" fluid>
-
+         <ComponentLock locked={componentLockCheck?.componentName===COMPLIANCE_PROFILE_LIST}>
          <Widget title={title} busy={isBusy}>
 
             <br />
@@ -310,6 +319,7 @@ export default function AdministratorsList() {
             />
 
          </Widget>
+         </ComponentLock>
 
          <Dialog
             isOpen={confirmDelete}

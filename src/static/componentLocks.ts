@@ -1,0 +1,22 @@
+export const LIST_OF_USERS = 'LIST_OF_USERS';
+export const LIST_OF_ROLES = 'LIST_OF_ROLES';
+// listOfCertificates
+// certificateInventoryFilter
+// complianceProfileList
+// listOfConnecters
+// listOfDiscoveries
+// raProfileList
+
+export const LIST_OF_CERTIFICATES = 'LIST_OF_CERTIFICATES';
+export const CERTIFICATE_INVENTORY_FILTER = 'CERTIFICATE_INVENTORY_FILTER';
+export const COMPLIANCE_PROFILE_LIST = 'COMPLIANCE_PROFILE_LIST';
+export const LIST_OF_CONNECTERS = 'LIST_OF_CONNECTERS';
+export const LIST_OF_DISCOVERIES = 'LIST_OF_DISCOVERIES';
+export const RA_PROFILE_LIST = 'RA_PROFILE_LIST';
+export const CREDENTIAL_STORE = 'CREDENTIAL_STORE';
+export const AUTHORITY_STORE = 'AUTHORITY_STORE';
+export const LIST_OF_GROUPS = 'LIST_OF_GROUPS';
+export const ENTITY_STORE = 'ENTITY_STORE';
+export const LOCATIONS_STORE = 'LOCATIONS_STORE';
+export const LIST_OF_ACME_ACCOUNTS = 'LIST_OF_ACME_ACCOUNTS';
+export const LIST_OF_ACME_PROFILES = 'LIST_OF_ACME_PROFILES';

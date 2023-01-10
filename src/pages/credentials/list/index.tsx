@@ -11,6 +11,9 @@ import MDBColumnName from "components/MDBColumnName";
 
 import CustomTable, { TableDataRow, TableHeader } from "components/CustomTable";
 import Dialog from "components/Dialog";
+import ComponentLock from "components/ComponentLock";
+import {selectors as userSelectors} from 'ducks/users'
+import { CREDENTIAL_STORE } from "static/componentLocks";
 
 const { MDBBadge } = require("mdbreact");
 
@@ -35,7 +38,10 @@ function CredentialList() {
 
    const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
    const [confirmForceDelete, setConfirmForceDelete] = useState<boolean>(false);
-
+   const componentLocks = useSelector(userSelectors.componentLocks);
+   const componentLockCheck = componentLocks.find(
+      (componentLock) => componentLock.componentName === CREDENTIAL_STORE
+    );
 
    useEffect(
       () => {
@@ -228,9 +234,13 @@ function CredentialList() {
 
    return (
       <Container className="themed-container" fluid>
-
+         <ComponentLock
+         locked={
+            componentLockCheck?.componentName === CREDENTIAL_STORE
+         }
+         errored={componentLockCheck?.errored}
+         >
          <Widget title={title} busy={isBusy}>
-
             <br />
 
             <CustomTable
@@ -241,9 +251,8 @@ function CredentialList() {
                hasPagination={true}
                canSearch={true}
             />
-
          </Widget>
-
+         </ComponentLock>
          <Dialog
             isOpen={confirmDelete}
             caption={`Delete ${checkedRows.length > 1 ? "Credentials" : "a Connector"}`}

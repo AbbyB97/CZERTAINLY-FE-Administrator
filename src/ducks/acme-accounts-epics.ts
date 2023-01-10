@@ -6,6 +6,8 @@ import { AppEpic } from "ducks";
 import { slice } from "./acme-accounts";
 import { actions as alertActions } from "./alerts";
 import { transformAcmeAccountDtoToModel, transformAcmeAccountListDtoToModel } from "./transform/acme-accounts";
+import { LIST_OF_ACME_ACCOUNTS } from "static/componentLocks";
+import * as usersSlice from "./users";
 
 
 const listAcmeAccounts: AppEpic = (action$, state$, deps) => {
@@ -48,6 +50,9 @@ const listAcmeAccountsFailed: AppEpic = (action$, state$, deps) => {
       ),
       map(
          action => alertActions.error(action.payload.error || "Unexpected error occurred")
+      ),
+      map(
+         componentLocks => usersSlice.actions.updateComponentLock({ componentName: LIST_OF_ACME_ACCOUNTS, errored: true })
       )
 
    );

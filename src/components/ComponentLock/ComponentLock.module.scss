@@ -1,0 +1,42 @@
+
+.lockComponentMainContainer {
+  position: relative;
+  padding-top: 2rem;
+}
+.lockChildrenContainer {
+  pointer-events: none;
+  z-index: 1;
+}
+
+.componentLockedStyle {
+  pointer-events: none;
+  opacity: 0.15;
+}
+
+.lockImageContainerStyle {
+  background-color: #c2c2c24d;
+  width: 100%;
+  position: absolute;
+  z-index: 4;
+  top: 57.5%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 5px 0;
+  flex-direction: row;
+  text-align: center;
+  /* On screens that are 600px wide or less, the background color is olive */
+  @media screen and (max-width: 600px) {
+    flex-direction: column;
+  }
+}
+
+.lockImageText {
+  font-size: 20px;
+  font-weight: 600;
+  color: #636363;
+  margin: 1px 2px;
+  padding: 0;
+}

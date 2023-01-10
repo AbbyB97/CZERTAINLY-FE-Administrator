@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { Component, useCallback, useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useRouteMatch } from "react-router-dom";
 import { Container } from "reactstrap";
@@ -13,6 +13,9 @@ import CustomTable, { TableDataRow, TableHeader } from "components/CustomTable";
 import Dialog from "components/Dialog";
 import { MDBBadge } from "mdbreact";
 import { acmeAccountStatus } from "utils/acmeAccount";
+import ComponentLock from "components/ComponentLock";
+import {selectors as userSelectors} from 'ducks/users'
+import { LIST_OF_ACME_ACCOUNTS } from "static/componentLocks";
 
 function AcmeAccountList() {
 
@@ -32,7 +35,10 @@ function AcmeAccountList() {
    const isBusy = isFetching || isRevoking || isBulkDeleting || isBulkEnabling || isBulkDisabling;
 
    const [confirmRevoke, setConfirmRevoke] = useState<boolean>(false);
-
+   const componentLocks = useSelector(userSelectors.componentLocks);
+   const componentLockCheck = componentLocks.find(
+      (componentLock) => componentLock.componentName === LIST_OF_ACME_ACCOUNTS
+    );
 
    useEffect(
 
@@ -222,7 +228,10 @@ function AcmeAccountList() {
    return (
 
       <Container className="themed-container" fluid>
-
+      <ComponentLock
+         locked={componentLockCheck?.componentName === LIST_OF_ACME_ACCOUNTS}
+         errored={componentLockCheck?.errored}
+         >
          <Widget title={title} busy={isBusy}>
 
             <br />
@@ -236,6 +245,7 @@ function AcmeAccountList() {
             />
 
          </Widget>
+      </ComponentLock>
 
          <Dialog
             isOpen={confirmRevoke}

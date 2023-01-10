@@ -10,6 +10,8 @@ import { actions as alertActions } from "./alerts";
 import { transformConnectorDTOToModel, transformFunctionGroupDTOtoModel } from "./transform/connectors";
 import { transformAttributeCallbackDataModelToDto, transformAttributeDescriptorDTOToModel, transformAttributeModelToDTO, transformConnectorHealthDTOToModel, transfromAttributeDescriptorCollectionDTOToModel } from "./transform/attributes";
 import { transformDeleteObjectErrorDtoToModel } from "./transform/_common";
+import * as usersSlice from "./users";
+import { LIST_OF_CONNECTERS } from "static/componentLocks";
 
 
 const listConnectors: AppEpic = (action$, state, deps) => {
@@ -51,8 +53,10 @@ const listConnectorsFailure: AppEpic = (action$, state, deps) => {
       ),
       map(
          action => alertActions.error(action.payload.error || "Unexpected error occured")
+      ),
+      map(
+         componentLocks => usersSlice.actions.updateComponentLock({ componentName: LIST_OF_CONNECTERS, errored: true })
       )
-
    )
 
 }

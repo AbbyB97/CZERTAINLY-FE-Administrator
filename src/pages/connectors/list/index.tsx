@@ -14,6 +14,9 @@ import Dialog from "components/Dialog";
 import { attributeFieldNameTransform } from "utils/attributes";
 import { FunctionGroupModel } from "models/connectors";
 import { inventoryStatus } from "utils/connector";
+import ComponentLock from "components/ComponentLock";
+import {selectors as userSelectors} from 'ducks/users'
+import { LIST_OF_CONNECTERS } from "static/componentLocks";
 
 const { MDBBadge } = require("mdbreact");
 
@@ -41,7 +44,12 @@ function ConnectorList() {
    const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
    const [confirmAuthorize, setConfirmAuthorize] = useState<boolean>(false);
    const [confirmForceDelete, setConfirmForceDelete] = useState<boolean>(false);
+   const componentLocks = useSelector(userSelectors.componentLocks);
+   const componentLockCheck = componentLocks.find(
+      (componentLock) => componentLock.componentName === LIST_OF_CONNECTERS
+    );
 
+    
 
    useEffect(
       () => {
@@ -325,21 +333,22 @@ function ConnectorList() {
    return (
 
       <Container className="themed-container" fluid>
-
-         <Widget title={title} busy={isBusy}>
-
-            <br />
-
-            <CustomTable
-               headers={connectorsRowHeaders}
-               data={connectorList}
-               onCheckedRowsChanged={setCheckedRows}
-               hasCheckboxes={true}
-               hasPagination={true}
-               canSearch={true}
-            />
-
-         </Widget>
+         <ComponentLock
+            locked={componentLockCheck?.componentName === LIST_OF_CONNECTERS}
+            errored={componentLockCheck?.errored}
+            >
+            <Widget title={title} busy={isBusy}>
+               <br />
+               <CustomTable
+                  headers={connectorsRowHeaders}
+                  data={connectorList}
+                  onCheckedRowsChanged={setCheckedRows}
+                  hasCheckboxes={true}
+                  hasPagination={true}
+                  canSearch={true}
+               />
+            </Widget>
+         </ComponentLock>
 
          <Dialog
             isOpen={confirmDelete}

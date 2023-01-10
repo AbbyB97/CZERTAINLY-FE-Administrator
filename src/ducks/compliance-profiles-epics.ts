@@ -7,6 +7,8 @@ import { AppEpic } from "ducks";
 import { slice } from "./compliance-profiles";
 import history from "browser-history";
 import { transformComplianceConnectorGroupDTOToModel, transformComplianceConnectorRuleDTOToModel, transformComplianceProfileDtoToModel, transformComplianceProfileListDtoToModel, transformComplianceRuleDTOToModel } from "./transform/compliance-profiles";
+import * as usersSlice from "./users";
+import { COMPLIANCE_PROFILE_LIST } from "static/componentLocks";
 
 
 const listComplianceProfiles: AppEpic = (action$, state$, deps) => {
@@ -49,6 +51,9 @@ const listComplianceProfilesFailed: AppEpic = (action$, state$, deps) => {
       ),
       map(
          action => alertActions.error(action.payload.error || "Unexpected error occurred")
+      ),
+      map(
+         action => usersSlice.actions.updateComponentLock({ componentName: COMPLIANCE_PROFILE_LIST, errored: true })
       )
 
    );

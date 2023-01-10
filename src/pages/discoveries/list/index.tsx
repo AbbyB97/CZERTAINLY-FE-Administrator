@@ -11,6 +11,9 @@ import MDBColumnName from "components/MDBColumnName";
 import CustomTable, { TableDataRow, TableHeader } from "components/CustomTable";
 import Dialog from "components/Dialog";
 import DiscoveryStatusBadge from "components/pages/discoveries/DiscoveryStatus";
+import ComponentLock from "components/ComponentLock";
+import {selectors as userSelectors} from 'ducks/users'
+import { LIST_OF_DISCOVERIES } from "static/componentLocks";
 
 const { MDBBadge } = require("mdbreact");
 
@@ -31,6 +34,10 @@ function DiscoveryList() {
    const [confirmDelete, setConfirmDelete] = useState(false);
 
    const isBusy = isFetching || isDeleting || isBulkDeleting;
+   const componentLocks = useSelector(userSelectors.componentLocks);
+   const componentLockCheck = componentLocks.find(
+      (componentLock) => componentLock.componentName === LIST_OF_DISCOVERIES
+    );
 
    useEffect(
 
@@ -192,21 +199,23 @@ function DiscoveryList() {
    return (
 
       <Container className="themed-container" fluid>
+      <ComponentLock
+         locked={componentLockCheck?.componentName === LIST_OF_DISCOVERIES}
+         errored={componentLockCheck?.errored}
+         >
+        <Widget title={title} busy={isBusy}>
+          <br />
 
-         <Widget title={title} busy={isBusy}>
-
-            <br />
-
-            <CustomTable
-               headers={discoveriesRowHeaders}
-               data={discoveryList}
-               onCheckedRowsChanged={setCheckedRows}
-               hasCheckboxes={true}
-               hasPagination={true}
-               canSearch={true}
-            />
-
-         </Widget>
+          <CustomTable
+            headers={discoveriesRowHeaders}
+            data={discoveryList}
+            onCheckedRowsChanged={setCheckedRows}
+            hasCheckboxes={true}
+            hasPagination={true}
+            canSearch={true}
+          />
+        </Widget>
+      </ComponentLock>
 
 
          <Dialog

@@ -8,6 +8,8 @@ import { slice } from "./acme-profiles";
 import history from "browser-history";
 import { transformAcmeProfileDtoToModel, transformAcmeProfileListDtoToModel } from "./transform/acme-profiles";
 import { transformAttributeModelToDTO } from "./transform/attributes";
+import * as usersSlice from "./users";
+import { LIST_OF_ACME_PROFILES } from "static/componentLocks";
 
 
 const listAcmeProfiles: AppEpic = (action$, state$, deps) => {
@@ -49,6 +51,9 @@ const listAcmeProfilesFailed: AppEpic = (action$, state$, deps) => {
       ),
       map(
          action => alertActions.error(action.payload.error || "Unexpected error occurred")
+      ),
+      map(
+         componentLocks => usersSlice.actions.updateComponentLock({ componentName: LIST_OF_ACME_PROFILES, errored: true })
       )
 
    );

@@ -10,6 +10,8 @@ import { slice } from "./discoveries";
 import { transformDiscoveryDTOToModel } from "./transform/discoveries";
 import { transformAttributeDescriptorDTOToModel, transformAttributeModelToDTO } from "./transform/attributes";
 import { transformConnectorDTOToModel } from "./transform/connectors";
+import * as usersSlice from "./users";
+import { LIST_OF_DISCOVERIES } from "static/componentLocks";
 
 
 const listDiscoveries: AppEpic = (action$, state$, deps) => {
@@ -51,8 +53,10 @@ const listDiscoveriesFailure: AppEpic = (action$, state$, deps) => {
       ),
       map(
          action => alertActions.error(action.payload.error || "Unexpected error occurred")
-      )
-
+      ),
+      map(
+         componentLocks => usersSlice.actions.updateComponentLock({ componentName: LIST_OF_DISCOVERIES, errored: true })
+      ),
    );
 
 }

@@ -1,4 +1,4 @@
-import { UserModel, UserDetailModel, CertificateModel } from "models";
+import { UserModel, UserDetailModel, CertificateModel, ComponentLockModel } from "models";
 import { createFeatureSelector } from "utils/ducks";
 import { createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RoleModel } from "models/roles";
@@ -8,7 +8,7 @@ export type State = {
 
    usersListCheckedRows: string[];
    userRolesListCheckedRows: string[];
-
+   componentLocks: ComponentLockModel[],
    deleteErrorMessage: string;
 
    user?: UserDetailModel;
@@ -35,7 +35,7 @@ export const initialState: State = {
 
    usersListCheckedRows: [],
    userRolesListCheckedRows: [],
-
+   componentLocks: [],
    deleteErrorMessage: "",
 
    users: [],
@@ -118,6 +118,12 @@ export const slice = createSlice({
          state.isFetchingList = false;
       },
 
+      // updateComponentLock: (state, action: PayloadAction<{ component: string }>) => {
+
+      updateComponentLock: (state, action: PayloadAction<{ componentName: string, errored: boolean }>) => {
+         const { componentName, errored } = action.payload
+         state.componentLocks = [...state.componentLocks, { componentName, errored }];
+      },
 
       getDetail: (state, action: PayloadAction<{ uuid: string }>) => {
 
@@ -415,6 +421,7 @@ const state = createFeatureSelector<State>(slice.name);
 
 const usersListCheckedRows = createSelector(state, state => state.usersListCheckedRows);
 const userRolesListCheckedRows = createSelector(state, state => state.userRolesListCheckedRows);
+const componentLocks = createSelector(state, state => state.componentLocks);
 
 const deleteErrorMessage = createSelector(state, state => state.deleteErrorMessage);
 
@@ -449,7 +456,7 @@ export const selectors = {
    userRoles,
 
    users,
-
+   componentLocks,
    isFetchingList,
    isFetchingDetail,
    isCreating,

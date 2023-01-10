@@ -12,6 +12,9 @@ import StatusBadge from "components/StatusBadge";
 import CustomTable, { TableDataRow, TableHeader } from "components/CustomTable";
 import Dialog from "components/Dialog";
 import { MDBBadge } from "mdbreact";
+import ComponentLock from "components/ComponentLock";
+import {selectors as userSelectors} from 'ducks/users'
+import { LIST_OF_ACME_PROFILES } from "static/componentLocks";
 
 export default function AdministratorsList() {
 
@@ -37,7 +40,10 @@ export default function AdministratorsList() {
 
    const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
    const [confirmForceDelete, setConfirmForceDelete] = useState<boolean>(false);
-
+   const componentLocks = useSelector(userSelectors.componentLocks);
+   const componentLockCheck = componentLocks.find(
+      (componentLock) => componentLock.componentName === LIST_OF_ACME_PROFILES
+    );
    useEffect(
 
       () => {
@@ -289,7 +295,10 @@ export default function AdministratorsList() {
    return (
 
       <Container className="themed-container" fluid>
-
+      <ComponentLock 
+         locked={componentLockCheck?.componentName === LIST_OF_ACME_PROFILES}
+         errored={componentLockCheck?.errored}
+      >
          <Widget title={title} busy={isBusy}>
 
             <br />
@@ -303,7 +312,7 @@ export default function AdministratorsList() {
             />
 
          </Widget>
-
+      </ComponentLock>
          <Dialog
             isOpen={confirmDelete}
             caption={`Delete ${checkedRows.length > 1 ? "ACME Profiles" : "an ACME Profile"}`}

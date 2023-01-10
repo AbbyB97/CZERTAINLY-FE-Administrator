@@ -13,6 +13,9 @@ import MDBColumnName from "components/MDBColumnName";
 import CustomTable, { TableDataRow, TableHeader } from "components/CustomTable";
 import WidgetButtons, { WidgetButtonProps } from "components/WidgetButtons";
 import Dialog from "components/Dialog";
+import ComponentLock from "components/ComponentLock";
+import {selectors as userSelectors} from 'ducks/users'
+import { RA_PROFILE_LIST } from "static/componentLocks";
 
 function RaProfileList() {
 
@@ -37,7 +40,11 @@ function RaProfileList() {
    const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
    const [complianceCheck, setComplianceCheck] = useState<boolean>(false);
-
+   const lockName = "raProfileList";
+   const componentLocks = useSelector(userSelectors.componentLocks);
+   const componentLockCheck = componentLocks.find(
+      (componentLock) => componentLock.componentName === RA_PROFILE_LIST
+    );
 
    useEffect(() => {
       dispatch(actions.setCheckedRows({ checkedRows: [] }));
@@ -223,7 +230,7 @@ function RaProfileList() {
    return (
 
       <Container className="themed-container" fluid>
-
+      <ComponentLock locked={componentLockCheck?.componentName===RA_PROFILE_LIST}>
          <Widget title={title} busy={isBusy}>
 
             <br />
@@ -237,7 +244,7 @@ function RaProfileList() {
             />
 
          </Widget>
-
+      </ComponentLock>
          <Dialog
             isOpen={confirmDelete}
             caption={`Delete RA ${checkedRows.length > 1 ? "Profiles" : "Profile"}`}

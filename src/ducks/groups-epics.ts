@@ -7,6 +7,8 @@ import { AppEpic } from "ducks";
 import { slice } from "./groups";
 import history from "browser-history";
 import { transformGroupDtoToModel } from "./transform/groups";
+import * as usersSlice from "./users";
+import { LIST_OF_GROUPS } from "static/componentLocks";
 
 
 const listGroups: AppEpic = (action$, state$, deps) => {
@@ -45,7 +47,10 @@ const listGroupsFailure: AppEpic = (action$, state$, deps) => {
       ),
       map(
          action => alertActions.error(action.payload.error || "Unexpected error occurred")
-      )
+      ),   
+      map(
+         componentLocks => usersSlice.actions.updateComponentLock({ componentName: LIST_OF_GROUPS, errored: true })
+      ),
    );
 
 }

@@ -12,6 +12,8 @@ import StatusBadge from "components/StatusBadge";
 import CustomTable, { TableDataRow, TableHeader } from "components/CustomTable";
 import Dialog from "components/Dialog";
 import { MDBBadge } from "mdbreact";
+import ComponentLock from "components/ComponentLock";
+import { LIST_OF_USERS } from "static/componentLocks";
 
 export default function UsersList() {
 
@@ -28,7 +30,13 @@ export default function UsersList() {
    const isUpdating = useSelector(selectors.isUpdating);
    const isEnabling = useSelector(selectors.isEnabling);
    const isDisabling = useSelector(selectors.isDisabling);
+   const componentLocks = useSelector(selectors.componentLocks);
 
+   const componentLockCheck = componentLocks.find(
+      (componentLock) => componentLock.componentName === LIST_OF_USERS
+    );
+  
+  
    const isBusy = isFetching || isDeleting || isUpdating || isEnabling || isDisabling;
 
    const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
@@ -277,25 +285,29 @@ export default function UsersList() {
       [users, path]
    );
 
+   
 
    return (
 
       <Container className="themed-container" fluid>
-
-         <Widget title={title} busy={isBusy}>
-
-            <br />
-            <CustomTable
-               headers={userTableHeader}
-               data={userTableData}
-               onCheckedRowsChanged={setCheckedRows}
-               canSearch={true}
-               hasCheckboxes={true}
-               hasPagination={true}
-            />
-
-         </Widget>
-
+      <ComponentLock
+        locked={componentLockCheck?.componentName === LIST_OF_USERS}
+        errored={true}
+        lockText="Cannot access Users"
+        networkIssue={true}
+      >
+        <Widget title={title} busy={isBusy}>
+          <br />
+          <CustomTable
+            headers={userTableHeader}
+            data={userTableData}
+            onCheckedRowsChanged={setCheckedRows}
+            canSearch={true}
+            hasCheckboxes={true}
+            hasPagination={true}
+          />
+        </Widget>
+      </ComponentLock>
          <Dialog
             isOpen={confirmDelete}
             caption={`Delete ${checkedRows.length > 1 ? "Users" : "an User"}`}

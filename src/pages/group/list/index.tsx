@@ -10,6 +10,9 @@ import MDBColumnName from "components/MDBColumnName";
 import CustomTable, { TableDataRow, TableHeader } from "components/CustomTable";
 import WidgetButtons, { WidgetButtonProps } from "components/WidgetButtons";
 import Dialog from "components/Dialog";
+import ComponentLock from "components/ComponentLock";
+import {selectors as userSelectors} from 'ducks/users'
+import { LIST_OF_GROUPS } from "static/componentLocks";
 
 function GroupList() {
 
@@ -29,7 +32,10 @@ function GroupList() {
    const isBusy = isFetching || isDeleting || isUpdating || isBulkDeleting;
 
    const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
-
+   const componentLocks = useSelector(userSelectors.componentLocks);
+   const componentLockCheck = componentLocks.find(
+      (componentLock) => componentLock.componentName === LIST_OF_GROUPS
+    );
 
    useEffect(() => {
       dispatch(actions.setCheckedRows({ checkedRows: [] }));
@@ -136,21 +142,24 @@ function GroupList() {
    return (
 
       <Container className="themed-container" fluid>
+         <ComponentLock
+            locked={componentLockCheck?.componentName === LIST_OF_GROUPS}
+            errored={componentLockCheck?.errored}
+            >
+            <Widget title={title} busy={isBusy}>
 
-         <Widget title={title} busy={isBusy}>
+               <br />
+               <CustomTable
+                  headers={groupsTableHeaders}
+                  data={groupsTableData}
+                  onCheckedRowsChanged={setCheckedRows}
+                  canSearch={true}
+                  hasCheckboxes={true}
+                  hasPagination={true}
+               />
 
-            <br />
-            <CustomTable
-               headers={groupsTableHeaders}
-               data={groupsTableData}
-               onCheckedRowsChanged={setCheckedRows}
-               canSearch={true}
-               hasCheckboxes={true}
-               hasPagination={true}
-            />
-
-         </Widget>
-
+            </Widget>
+         </ComponentLock>
          <Dialog
             isOpen={confirmDelete}
             caption={`Delete ${checkedRows.length > 1 ? "Groups" : "Profile"}`}

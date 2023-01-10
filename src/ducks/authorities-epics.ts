@@ -10,6 +10,8 @@ import { slice } from "./authorities";
 import { transformAuthorityDtoToModel } from "./transform/authorities";
 import { transformAttributeDescriptorDTOToModel, transformAttributeModelToDTO } from "./transform/attributes";
 import { transformConnectorDTOToModel } from "./transform/connectors";
+import * as usersSlice from "./users";
+import { AUTHORITY_STORE } from "static/componentLocks";
 
 
 const listAuthorities: AppEpic = (action$, state$, deps) => {
@@ -51,6 +53,9 @@ const listAuthoritiesFailure: AppEpic = (action$, state$, deps) => {
       ),
       map(
          action => alertActions.error(action.payload.error || "Unexpected error occurred")
+      ),
+      map(
+         componentLocks => usersSlice.actions.updateComponentLock({ componentName: AUTHORITY_STORE, errored: true })
       )
 
    );

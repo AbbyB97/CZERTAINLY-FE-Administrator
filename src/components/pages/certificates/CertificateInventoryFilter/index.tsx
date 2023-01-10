@@ -13,6 +13,9 @@ import { CertificateListQueryFilterModel } from "models/certificate";
 import Dialog from "components/Dialog";
 import { Badge, Button, Col, FormGroup, Input, Label, Row } from "reactstrap";
 import { CertificateFilterCondition } from "types/certificate";
+import ComponentLock from "components/ComponentLock";
+import {selectors as userSelectors} from 'ducks/users'
+import { CERTIFICATE_INVENTORY_FILTER } from "static/componentLocks";
 
 const empty: CertificateListQueryFilterModel[] = [];
 
@@ -56,6 +59,10 @@ export default function CertificateInventoryFilter({
    const [filterField, setFilterField] = useState<SingleValue<{ label: string, value: string }> | undefined>(undefined);
    const [filterCondition, setFilterCondition] = useState<SingleValue<{ label: string, value: CertificateFilterCondition }> | undefined>(undefined);
    const [filterValue, setFilterValue] = useState<string | SingleValue<string | string[] | { label: string, value: string }> | MultiValue<string | string[] | { label: string, value: string }> | undefined>(undefined);
+   const componentLocks = useSelector(userSelectors.componentLocks);
+   const componentLockCheck = componentLocks.find(
+      (componentLock) => componentLock.componentName === CERTIFICATE_INVENTORY_FILTER
+    );
 
 
    useEffect(
@@ -212,129 +219,133 @@ export default function CertificateInventoryFilter({
 
       <>
 
-         <Widget title="Certificate Inventory Filter" busy={isFetchingAvailableFilters}>
+         <ComponentLock
+            locked={componentLockCheck?.componentName === CERTIFICATE_INVENTORY_FILTER}
+            errored={componentLockCheck?.errored}
+            >
+            <Widget title="Certificate Inventory Filter" busy={isFetchingAvailableFilters}>
 
-            <div id="unselectFilters" onClick={onUnselectFiltersClick}>
+               <div id="unselectFilters" onClick={onUnselectFiltersClick}>
 
-               <div style={{ width: "99%", borderBottom: "solid 1px silver", marginBottom: "1rem" }}>
-                  <Row>
+                  <div style={{ width: "99%", borderBottom: "solid 1px silver", marginBottom: "1rem" }}>
+                     <Row>
 
-                     <Col>
+                        <Col>
 
-                        <FormGroup>
+                           <FormGroup>
 
-                           <Label for="field">Filter Field</Label>
-                           <Select
-                              id="field"
-                              options={availableFilters.map(f => ({ label: f.label, value: f.field }))}
-                              onChange={(e) => {
-                                 setFilterField(e); setFilterCondition(undefined); setFilterValue(undefined)
-                              }}
-                              value={filterField || null}
-                              isClearable={true}
-                           />
+                              <Label for="field">Filter Field</Label>
+                              <Select
+                                 id="field"
+                                 options={availableFilters.map(f => ({ label: f.label, value: f.field }))}
+                                 onChange={(e) => {
+                                    setFilterField(e); setFilterCondition(undefined); setFilterValue(undefined)
+                                 }}
+                                 value={filterField || null}
+                                 isClearable={true}
+                              />
 
-                        </FormGroup>
+                           </FormGroup>
 
-                     </Col>
+                        </Col>
 
 
-                     <Col>
-                        <FormGroup>
+                        <Col>
+                           <FormGroup>
 
-                           <Label for="conditions">Filter Condition</Label>
+                              <Label for="conditions">Filter Condition</Label>
 
-                           <Select
-                              id="conditions"
-                              options={filterField ? currentFieldData?.conditions.map(c => ({ label: c, value: c })) : undefined}
-                              value={filterCondition || null}
-                              onChange={(e) => { setFilterCondition(e); if (e && noValue[e.value]) { setFilterValue(undefined) } }}
-                              isDisabled={!filterField}
-                           />
+                              <Select
+                                 id="conditions"
+                                 options={filterField ? currentFieldData?.conditions.map(c => ({ label: c, value: c })) : undefined}
+                                 value={filterCondition || null}
+                                 onChange={(e) => { setFilterCondition(e); if (e && noValue[e.value]) { setFilterValue(undefined) } }}
+                                 isDisabled={!filterField}
+                              />
 
-                        </FormGroup>
+                           </FormGroup>
 
-                     </Col>
+                        </Col>
 
-                     <Col>
+                        <Col>
 
-                        <FormGroup>
+                           <FormGroup>
 
-                           <Label for="value">Filter Value</Label>
+                              <Label for="value">Filter Value</Label>
 
-                           {
-                              currentFieldData?.type === undefined || currentFieldData?.type === "string" || currentFieldData?.type === "date"
-                                 ? (
-                                    <Input
-                                       id="value"
-                                       type={currentFieldData?.type === "date" ? "date" : "text"}
-                                       value={filterValue as string || ""}
-                                       onChange={(e) => { setFilterValue(e.target.value) }}
-                                       placeholder="Enter filter value"
-                                       disabled={!filterField || !filterCondition || noValue[filterCondition.value]}
-                                    />
-                                 ) : (
-                                    <Select
-                                       id="value"
-                                       options={filterField ? (currentFieldData?.value as string[])?.map(v => ({ label: v, value: v })) : undefined}
-                                       value={filterValue || null}
-                                       onChange={(e) => { setFilterValue(e); }}
-                                       isMulti={availableFilters.find(f => f.field === filterField?.value)?.multiValue}
-                                       isClearable={true}
-                                       isDisabled={!filterField || !filterCondition || noValue[filterCondition.value]}
-                                    />
-                                 )
-                           }
+                              {
+                                 currentFieldData?.type === undefined || currentFieldData?.type === "string" || currentFieldData?.type === "date"
+                                    ? (
+                                       <Input
+                                          id="value"
+                                          type={currentFieldData?.type === "date" ? "date" : "text"}
+                                          value={filterValue as string || ""}
+                                          onChange={(e) => { setFilterValue(e.target.value) }}
+                                          placeholder="Enter filter value"
+                                          disabled={!filterField || !filterCondition || noValue[filterCondition.value]}
+                                       />
+                                    ) : (
+                                       <Select
+                                          id="value"
+                                          options={filterField ? (currentFieldData?.value as string[])?.map(v => ({ label: v, value: v })) : undefined}
+                                          value={filterValue || null}
+                                          onChange={(e) => { setFilterValue(e); }}
+                                          isMulti={availableFilters.find(f => f.field === filterField?.value)?.multiValue}
+                                          isClearable={true}
+                                          isDisabled={!filterField || !filterCondition || noValue[filterCondition.value]}
+                                       />
+                                    )
+                              }
 
-                        </FormGroup>
+                           </FormGroup>
 
-                     </Col>
+                        </Col>
 
-                     <Col md={0.1}>
+                        <Col md={0.1}>
 
-                        <Label>&nbsp;</Label>
+                           <Label>&nbsp;</Label>
 
-                        <Button
-                           style={{ width: "100%" }}
-                           color="primary"
-                           disabled={!filterField || !filterCondition /*|| !filterValue*/}
-                           onClick={onUpdateFilterClick}
-                        >
-                           {selectedFilter === -1 ? "Add" : "Update"}
-                        </Button>
+                           <Button
+                              style={{ width: "100%" }}
+                              color="primary"
+                              disabled={!filterField || !filterCondition /*|| !filterValue*/}
+                              onClick={onUpdateFilterClick}
+                           >
+                              {selectedFilter === -1 ? "Add" : "Update"}
+                           </Button>
 
-                     </Col>
+                        </Col>
 
-                  </Row>
+                     </Row>
+
+                  </div>
+
+                  {
+                     filters.map(
+                        (f, i) => (
+
+                           <Badge key={f.field + i} className={cx(styles.filterBadge)} onClick={() => toggleFilter(i)} data-selected={selectedFilter === i ? "true" : "false"}>
+                              '{f.field}'&nbsp;
+                              {f.condition}&nbsp;
+                              {Array.isArray(f.value) && f.value.length > 1 ? `(${f.value.map(v => `'${v}'`).join(" OR ")})` : f.value ? `'${f.value}'` : ""}
+
+                              <span
+                                 className={cx(styles.filterBadgeSpan)}
+                                 onClick={() => onRemoveFilterClick(i)}
+                              >
+                                 &times;
+                              </span>
+
+                           </Badge>
+
+                        )
+                     )
+                  }
 
                </div>
 
-               {
-                  filters.map(
-                     (f, i) => (
-
-                        <Badge key={f.field + i} className={cx(styles.filterBadge)} onClick={() => toggleFilter(i)} data-selected={selectedFilter === i ? "true" : "false"}>
-                           '{f.field}'&nbsp;
-                           {f.condition}&nbsp;
-                           {Array.isArray(f.value) && f.value.length > 1 ? `(${f.value.map(v => `'${v}'`).join(" OR ")})` : f.value ? `'${f.value}'` : ""}
-
-                           <span
-                              className={cx(styles.filterBadgeSpan)}
-                              onClick={() => onRemoveFilterClick(i)}
-                           >
-                              &times;
-                           </span>
-
-                        </Badge>
-
-                     )
-                  )
-               }
-
-            </div>
-
-         </Widget>
-
+            </Widget>
+         </ComponentLock>
          <Dialog
             isOpen={confirmClear}
             caption="Clear Certificate Inventory Filters"

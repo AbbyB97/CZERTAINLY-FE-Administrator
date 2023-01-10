@@ -29,3 +29,9 @@ export interface UserDetailModel extends UserModel {
    roles: RoleModel[];
 
 }
+
+
+export interface ComponentLockModel {
+   componentName: string;
+   errored: boolean;
+}

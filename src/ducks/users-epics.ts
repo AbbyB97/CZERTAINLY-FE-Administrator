@@ -11,6 +11,7 @@ import { actions as alertActions } from "./alerts";
 import { transformCertModelToDTO } from "./transform/certificates";
 import { transformUserDetailDTOToModel, transformUserDTOToModel } from "./transform/users";
 import { transformRoleDTOToModel } from "./transform/roles";
+import { LIST_OF_USERS } from "static/componentLocks";
 
 
 const list: AppEpic = (action$, state, deps) => {
@@ -48,8 +49,10 @@ const listFailure: AppEpic = (action$, state, deps) => {
       ),
       map(
          action => alertActions.error(action.payload.error || "Unexpected error occured")
+      ),
+      map(
+         action => slice.actions.updateComponentLock({ componentName: LIST_OF_USERS, errored: true })
       )
-
    )
 
 }

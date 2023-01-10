@@ -13,6 +13,9 @@ import MDBColumnName from "components/MDBColumnName";
 import CustomTable, { TableDataRow, TableHeader } from "components/CustomTable";
 import Dialog from "components/Dialog";
 import StatusBadge from "components/StatusBadge";
+import ComponentLock from "components/ComponentLock";
+import {selectors as userSelectors} from 'ducks/users'
+import { LOCATIONS_STORE } from "static/componentLocks";
 
 function LocationList() {
 
@@ -31,6 +34,10 @@ function LocationList() {
    const [confirmDelete, setConfirmDelete] = useState(false);
 
    const isBusy = isFetching || isDeleting || isUpdating;
+   const componentLocks = useSelector(userSelectors.componentLocks);
+   const componentLockCheck = componentLocks.find(
+      (componentLock) => componentLock.componentName === LOCATIONS_STORE
+    );
 
 
    useEffect(
@@ -231,9 +238,11 @@ function LocationList() {
    return (
 
       <Container className="themed-container" fluid>
-
+      <ComponentLock
+        locked={componentLockCheck?.componentName === LOCATIONS_STORE}
+        errored={componentLockCheck?.errored}
+      >
          <Widget title={title} busy={isBusy}>
-
             <br />
 
             <CustomTable
@@ -244,9 +253,8 @@ function LocationList() {
                hasPagination={true}
                canSearch={true}
             />
-
          </Widget>
-
+      </ComponentLock>
 
          <Dialog
             isOpen={confirmDelete}

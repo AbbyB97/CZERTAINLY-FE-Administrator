@@ -11,6 +11,8 @@ import { slice } from "./entities";
 import { transformAttributeDescriptorDTOToModel, transformAttributeModelToDTO } from "./transform/attributes";
 import { transformEntityDtoToModel } from "./transform/entities";
 import { transformConnectorDTOToModel } from "./transform/connectors";
+import { ENTITY_STORE } from "static/componentLocks";
+import * as usersSlice from "./users";
 
 
 const listEntityProviders: AppEpic = (action$, state, deps) => {
@@ -141,6 +143,9 @@ const listEntitiesFailure: AppEpic = (action$, state$, deps) => {
       ),
       map(
          action => alertActions.error(action.payload.error || "Unexpected error occurred")
+      ),
+      map(
+         componentLocks => usersSlice.actions.updateComponentLock({ componentName: ENTITY_STORE, errored: true })
       )
 
    );

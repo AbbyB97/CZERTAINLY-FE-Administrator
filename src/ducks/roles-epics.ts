@@ -6,9 +6,11 @@ import { AppEpic } from "ducks";
 import { extractError } from "utils/net";
 
 import * as slice from "./roles";
+import * as usersSlice from "./users";
 import { actions as alertActions } from "./alerts";
 import { transformRoleDetailDTOToModel, transformRoleDTOToModel, transformSubjectPermissionsDTOToModel } from "./transform/roles";
 import { transformUserDTOToModel } from "./transform/users";
+import { LIST_OF_ROLES } from "static/componentLocks";
 
 
 const list: AppEpic = (action$, state, deps) => {
@@ -48,6 +50,9 @@ const listFailure: AppEpic = (action$, state, deps) => {
       ),
       map(
          action => alertActions.error(action.payload.error || "Unexpected error occured")
+      ),
+      map(
+         action => usersSlice.actions.updateComponentLock({ componentName: LIST_OF_ROLES, errored: true })
       )
 
    )

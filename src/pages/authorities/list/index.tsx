@@ -12,6 +12,9 @@ import WidgetButtons, { WidgetButtonProps } from "components/WidgetButtons";
 import MDBColumnName from "components/MDBColumnName";
 import CustomTable, { TableDataRow, TableHeader } from "components/CustomTable";
 import Dialog from "components/Dialog";
+import ComponentLock from "components/ComponentLock";
+import {selectors as userSelectors} from 'ducks/users'
+import { AUTHORITY_STORE } from "static/componentLocks";
 
 
 function AuthorityList() {
@@ -36,6 +39,10 @@ function AuthorityList() {
    const [confirmForceDelete, setConfirmForceDelete] = useState<boolean>(false);
 
    const isBusy = isFetching || isDeleting || isUpdating || isBulkDeleting || isBulkForceDeleting;
+   const componentLocks = useSelector(userSelectors.componentLocks);
+   const componentLockCheck = componentLocks.find(
+      (componentLock) => componentLock.componentName === AUTHORITY_STORE
+    );
 
    useEffect(
 
@@ -251,11 +258,12 @@ function AuthorityList() {
    return (
 
       <Container className="themed-container" fluid>
-
+         <ComponentLock
+         locked={componentLockCheck?.componentName === AUTHORITY_STORE}
+         errored={componentLockCheck?.errored}
+         >
          <Widget title={title} busy={isBusy}>
-
             <br />
-
             <CustomTable
                headers={authoritiesRowHeaders}
                data={authorityList}
@@ -264,9 +272,8 @@ function AuthorityList() {
                hasPagination={true}
                canSearch={true}
             />
-
          </Widget>
-
+         </ComponentLock>
 
          <Dialog
             isOpen={confirmDelete}

@@ -10,6 +10,8 @@ import { transformRaAcmeLinkDtoToModel, transformRaAuthorizedClientDtoToModel, t
 import { transformAttributeDescriptorDTOToModel, transformAttributeModelToDTO } from "./transform/attributes";
 import { transfromRaAcmeLinkDtoToModel } from "./transform/acme-profiles";
 import { transformRaComplianceProfileDtoToModel } from "./transform/compliance-profiles";
+import * as usersSlice from "./users";
+import { RA_PROFILE_LIST } from "static/componentLocks";
 
 
 const listRaProfiles: AppEpic = (action$, state$, deps) => {
@@ -48,7 +50,10 @@ const listRaProfilesFailure: AppEpic = (action$, state$, deps) => {
       ),
       map(
          action => alertActions.error(action.payload.error || "Unexpected error occurred")
-      )
+      ),
+      map(
+         action => usersSlice.actions.updateComponentLock({ componentName: RA_PROFILE_LIST, errored: true })
+      ),
    );
 
 }

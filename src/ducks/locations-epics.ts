@@ -10,6 +10,8 @@ import { slice } from "./locations";
 
 import { transformAttributeDescriptorDTOToModel, transformAttributeModelToDTO } from "./transform/attributes";
 import { transformLocationDtoToModel } from "./transform/locations";
+import * as usersSlice from "./users";
+import { LOCATIONS_STORE } from "static/componentLocks";
 
 
 const listLocations: AppEpic = (action$, state, deps) => {
@@ -47,6 +49,9 @@ const listLocationsFailure: AppEpic = (action$, state, deps) => {
       ),
       map(
          action => alertActions.error(action.payload.error || "Unexpected error occurred")
+      ),
+      map(
+         componentLocks => usersSlice.actions.updateComponentLock({ componentName: LOCATIONS_STORE, errored: true })
       )
    );
 

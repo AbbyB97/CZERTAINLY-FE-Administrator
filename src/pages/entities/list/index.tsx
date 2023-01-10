@@ -12,6 +12,9 @@ import WidgetButtons, { WidgetButtonProps } from "components/WidgetButtons";
 import MDBColumnName from "components/MDBColumnName";
 import CustomTable, { TableDataRow, TableHeader } from "components/CustomTable";
 import Dialog from "components/Dialog";
+import ComponentLock from "components/ComponentLock";
+import {selectors as userSelectors} from 'ducks/users'
+import { ENTITY_STORE  } from "static/componentLocks";
 
 function EntityList() {
 
@@ -30,6 +33,10 @@ function EntityList() {
    const [confirmDelete, setConfirmDelete] = useState(false);
 
    const isBusy = isFetching || isDeleting || isUpdating;
+   const componentLocks = useSelector(userSelectors.componentLocks);
+   const componentLockCheck = componentLocks.find(
+      (componentLock) => componentLock.componentName === ENTITY_STORE
+    );
 
 
    useEffect(
@@ -174,7 +181,10 @@ function EntityList() {
    return (
 
       <Container className="themed-container" fluid>
-
+      <ComponentLock
+         locked={componentLockCheck?.componentName === ENTITY_STORE}
+         errored={componentLockCheck?.errored}
+         >
          <Widget title={title} busy={isBusy}>
 
             <br />
@@ -189,7 +199,7 @@ function EntityList() {
             />
 
          </Widget>
-
+      </ComponentLock>
 
          <Dialog
             isOpen={confirmDelete}

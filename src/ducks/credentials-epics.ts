@@ -11,6 +11,8 @@ import { slice } from "./credentials";
 import { transformCredentialDtoToModel } from "./transform/credentials";
 import { transformConnectorDTOToModel } from "./transform/connectors";
 import { transformAttributeDescriptorDTOToModel, transformAttributeModelToDTO } from "./transform/attributes";
+import { CREDENTIAL_STORE } from "static/componentLocks";
+import * as usersSlice from "./users";
 
 
 const listCredentials: AppEpic = (action$, state, deps) => {
@@ -52,6 +54,9 @@ const listCredentialsFailure: AppEpic = (action$, state, deps) => {
       ),
       map(
          action => alertActions.error(action.payload.error || "Unexpected error occurred")
+      ),
+      map(
+         componentLocks => usersSlice.actions.updateComponentLock({ componentName: CREDENTIAL_STORE, errored: false })
       )
 
    );
