@@ -37,6 +37,9 @@ export const getAttributeContent = (contentType: AttributeContentType, content: 
     }
 
     const mapping = (content: BaseAttributeContentModel): string | JSX.Element | undefined => {
+        if (!content?.data) {
+            return '';
+        }
         switch (contentType) {
             case AttributeContentType.Boolean:
                 return content.data ? 'true' : 'false';

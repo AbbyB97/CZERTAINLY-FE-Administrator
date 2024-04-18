@@ -377,7 +377,7 @@ export default function AttributeEditor({
                     if (descriptor.properties.list && descriptor.properties.multiSelect) {
                         if (Array.isArray(attribute?.content)) {
                             formAttributeValue = attribute!.content.map((content) => ({
-                                label: content.reference ?? content.data.toString(),
+                                label: content.reference ?? content?.data ? content.data.toString() : '',
                                 value: content,
                             }));
                         } else {
